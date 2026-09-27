@@ -297,7 +297,7 @@ This warning appears when your connected Freighter wallet is targeting a differe
 Next.js inlines all `NEXT_PUBLIC_*` configuration variables directly into the static client JavaScript bundle at build time. Modifying `.env.local` without running `npm run build` (or restarting `npm run dev`) will cause the client bundle to continue targeting old contract addresses or RPC endpoints. See [Configuration: Switching Contracts](#switching-contracts) and [Troubleshooting: Stale Build](#stale-build-serving-old-contract-id).
 
 ### 6. How does the frontend prevent duplicate submissions and handle timeout errors?
-The client enforces a single in-flight transaction lock in `lib/contract.ts` to prevent duplicate concurrent submissions. If network confirmation exceeds the polling threshold (30 seconds), the client raises a `TransactionTimeoutError` preserving the submitted transaction hash, allowing users to safely re-check confirmation status without risking a duplicate transaction. See [Features](#features) and [Transaction lifecycle](docs/api-contract.md#transaction-lifecycle).
+The client enforces a single in-flight transaction lock in `lib/contract.ts` to prevent duplicate concurrent submissions. If network confirmation exceeds the polling threshold (30 seconds), the client raises a `TransactionTimeoutError` preserving the submitted transaction hash, allowing users to safely re-check confirmation status without risking a duplicate transaction. See [Features](#features), [Transaction lifecycle](docs/api-contract.md#transaction-lifecycle), and [docs/timeout-recovery.md](docs/timeout-recovery.md) for the full recovery flow.
 
 ## Styling Approach
 
@@ -410,6 +410,11 @@ mapping are all documented in [docs/api-contract.md](docs/api-contract.md).
 The `docs/` directory holds reference documentation beyond what fits here —
 see [docs/README.md](docs/README.md) for an index of what's there and a
 one-line description of each document.
+
+Conventions for writing components and hooks are documented for AI assistants
+and new contributors in `.kiro/steering/`:
+[`component-conventions.md`](.kiro/steering/component-conventions.md) and
+[`hook-conventions.md`](.kiro/steering/hook-conventions.md).
 
 See [CHANGELOG.md](CHANGELOG.md) for a record of what changed between
 versions of the client.

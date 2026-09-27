@@ -136,6 +136,10 @@ recoverTimeout()
 A second timeout leaves the alert in place with an updated error message so the
 user still has the explorer link available.
 
+> This section describes the mechanism. For the user-facing explanation — what a
+> confirmation timeout means, why the transaction may still settle, and what to
+> click — see [timeout-recovery.md](timeout-recovery.md).
+
 ---
 
 ## Summary

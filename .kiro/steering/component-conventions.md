@@ -3,6 +3,10 @@
 This document describes the structural conventions used across the frontend.
 Follow these patterns when adding or modifying components and hooks.
 
+For the conventions a hook follows once it exists — the return shape, naming,
+cleanup, and when logic belongs in a hook rather than a component — see
+[hook-conventions.md](hook-conventions.md).
+
 ## The core separation: presentational components and data hooks
 
 Components and data loading are deliberately kept in separate layers.
