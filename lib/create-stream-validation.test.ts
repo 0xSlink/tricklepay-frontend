@@ -35,4 +35,25 @@ describe("validateCreateStreamForm", () => {
       end: "End must be after start.",
     });
   });
+
+  it("rejects an end time before the start", () => {
+    expect(
+      validateCreateStreamForm({
+        ...validDraft,
+        start: "2026-08-27T12:00",
+        end: "2026-08-27T10:00",
+      }),
+    ).toMatchObject({
+      end: "End must be after start.",
+    });
+  });
+
+  it("rejects a cliff outside the window", () => {
+    expect(validateCreateStreamForm({ ...validDraft, cliff: "2026-08-27T09:00" })).toMatchObject({
+      cliff: "Cliff must fall between start and end.",
+    });
+    expect(validateCreateStreamForm({ ...validDraft, cliff: "2026-08-27T13:00" })).toMatchObject({
+      cliff: "Cliff must fall between start and end.",
+    });
+  });
 });
