@@ -125,4 +125,34 @@ describe("useCreateStreamForm", () => {
     expect(latest.prepared).not.toBeNull();
     expect(latest.prepared).toMatchObject({ sender: SENDER, recipient: RECIPIENT, token: TOKEN });
   });
+
+  it("round-trips amounts through the form and converts to base units", async () => {
+    await renderForm();
+
+    await act(async () => {
+      latest.setField("recipient", RECIPIENT);
+    });
+    await act(async () => {
+      latest.setField("token", TOKEN);
+    });
+    await act(async () => {
+      latest.setField("amount", "12.5");
+    });
+    await act(async () => {
+      latest.setField("start", "2026-08-27T10:00");
+    });
+    await act(async () => {
+      latest.setField("end", "2026-08-27T12:00");
+    });
+
+    await act(async () => {
+      await latest.handleSubmit(fakeSubmitEvent());
+    });
+
+    // A test asserts the displayed value matches what was entered
+    expect(latest.fields.amount).toBe("12.5");
+
+    // A test asserts a decimal amount converts to the expected base units (7 decimals)
+    expect(latest.prepared?.totalAmount).toBe(125000000n);
+  });
 });
