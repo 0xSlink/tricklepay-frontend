@@ -70,13 +70,15 @@ describe("parseContractError", () => {
     );
   });
 
-  it("returns a fallback with the raw code for unmapped codes", () => {
+  it("returns a fallback with the raw code for unmapped codes while mapped codes are unaffected", () => {
     expect(parseContractError("Error(Contract, #99)")).toBe(
       `${GENERIC_FAILURE} (error code 99)`,
     );
     expect(parseContractError("Error(Contract, #0)")).toBe(
       `${GENERIC_FAILURE} (error code 0)`,
     );
+    // Ensure a mapped code is unaffected
+    expect(parseContractError("Error(Contract, #1)")).toBe("Stream not found.");
   });
 
   it("returns the generic failure message when no error token is present", () => {
