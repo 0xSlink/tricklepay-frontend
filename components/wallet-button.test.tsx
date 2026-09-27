@@ -46,7 +46,7 @@ function mockConnected(address: string) {
 }
 
 describe("WalletButton", () => {
-  describe("disconnected state (#136)", () => {
+  describe("disconnected state (#136, #269)", () => {
     it("prompts the user to connect", () => {
       mockDisconnected();
       const el = WalletButton();
@@ -62,7 +62,7 @@ describe("WalletButton", () => {
     });
   });
 
-  describe("connected state (#137)", () => {
+  describe("connected state (#137, #269)", () => {
     it("shows the truncated address", () => {
       const addr = "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7";
       mockConnected(addr);
