@@ -10,8 +10,9 @@ import { StreamStatusBadge } from "@/components/stream-status-badge";
 import { useWallet } from "@/components/wallet-provider";
 import { useAccrual } from "@/hooks/use-accrual";
 import { useNow } from "@/hooks/use-now";
-import { formatTime, formatTokenAmount, formatTokenDisplay, relativeTime, truncateAddress } from "@/lib/format";
-import { formatUtcFromUnixSeconds, resolvedTimeZoneLabel } from "@/lib/timezone";
+import { formatTokenAmount, formatTokenDisplay, truncateAddress } from "@/lib/format";
+import { formatSchedule, NO_CLIFF_LABEL } from "@/lib/schedule";
+import { resolvedTimeZoneLabel } from "@/lib/timezone";
 import type { StreamView } from "@/types/stream";
 
 // Announce balance to assistive technology at most once per this interval.
@@ -61,8 +62,7 @@ export function StreamDetail({ stream, onComplete }: { stream: StreamView; onCom
   // keep advancing even for statuses (pending, completed, cancelled) where
   // useAccrual never ticks.
   useNow();
-  const cliffDisplay =
-    stream.cliffTime === stream.startTime ? "none" : formatTime(stream.cliffTime);
+  const schedule = formatSchedule(stream);
 
   // Keep a ref to the latest accrual so the announcement interval can read it
   // without being listed as a dependency (which would restart the timer every second).
@@ -161,29 +161,21 @@ export function StreamDetail({ stream, onComplete }: { stream: StreamView; onCom
         />
         <Field
           label="Start"
-          value={formatTime(stream.startTime)}
-          countdown={relativeTime(stream.startTime, "starts")}
-          utc={formatUtcFromUnixSeconds(stream.startTime)}
+          value={schedule.start.local}
+          countdown={schedule.start.countdown}
+          utc={schedule.start.utc}
         />
         <Field
           label="End"
-          value={formatTime(stream.endTime)}
-          countdown={relativeTime(stream.endTime, "ends")}
-          utc={formatUtcFromUnixSeconds(stream.endTime)}
+          value={schedule.end.local}
+          countdown={schedule.end.countdown}
+          utc={schedule.end.utc}
         />
         <Field
           label="Cliff"
-          value={cliffDisplay}
-          countdown={
-            stream.cliffTime !== stream.startTime
-              ? relativeTime(stream.cliffTime, "cliff")
-              : undefined
-          }
-          utc={
-            stream.cliffTime !== stream.startTime
-              ? formatUtcFromUnixSeconds(stream.cliffTime)
-              : undefined
-          }
+          value={schedule.cliff?.local ?? NO_CLIFF_LABEL}
+          countdown={schedule.cliff?.countdown}
+          utc={schedule.cliff?.utc}
         />
       </dl>
       <p className="mt-2 text-xs text-neutral-500">

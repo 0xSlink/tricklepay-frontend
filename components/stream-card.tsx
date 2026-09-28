@@ -2,10 +2,13 @@ import Link from "next/link";
 import type { JSX } from "react";
 
 import { StreamStatusBadge } from "@/components/stream-status-badge";
-import { formatTokenAmount, timeRemaining, truncateAddress } from "@/lib/format";
+import { formatTokenAmount, truncateAddress } from "@/lib/format";
+import { formatRemaining } from "@/lib/schedule";
 import type { StreamView } from "@/types/stream";
 
 export function StreamCard({ stream }: { stream: StreamView }): JSX.Element {
+  const remaining = formatRemaining(stream);
+
   return (
     <Link
       href={`/streams/${stream.id}`}
@@ -33,9 +36,7 @@ export function StreamCard({ stream }: { stream: StreamView }): JSX.Element {
           <p className="text-neutral-100">{formatTokenAmount(stream.totalAmount, stream.token)}</p>
         </div>
       </div>
-      {(stream.status === "streaming" || stream.status === "pending") && (
-        <p className="mt-3 text-xs text-neutral-500">{timeRemaining(stream.endTime)}</p>
-      )}
+      {remaining && <p className="mt-3 text-xs text-neutral-500">{remaining}</p>}
     </Link>
   );
 }

@@ -3,8 +3,9 @@
 import type { JSX, ReactNode } from "react";
 
 import { CopyButton } from "@/components/copy-button";
-import { formatDuration, formatTime, formatTokenAmount, formatTokenRate, truncateAddress } from "@/lib/format";
-import { formatUtcFromUnixSeconds, resolvedTimeZoneLabel } from "@/lib/timezone";
+import { formatDuration, formatTokenAmount, formatTokenRate, truncateAddress } from "@/lib/format";
+import { formatSchedule, NO_CLIFF_LABEL, type ScheduleMoment } from "@/lib/schedule";
+import { resolvedTimeZoneLabel } from "@/lib/timezone";
 import { vestingRatePerDay } from "@/lib/vesting";
 import type { CreateStreamParams } from "@/types/contract";
 
@@ -49,14 +50,12 @@ function AddressRow({ label, address }: { label: string; address: string }) {
 // text — this is the last screen before signing, so it's the most
 // consequential place to remove any doubt about which instant a local time
 // actually resolves to.
-function TimeRow({ label, unixSeconds }: { label: string; unixSeconds: bigint }) {
+function TimeRow({ label, moment }: { label: string; moment: ScheduleMoment }) {
   return (
     <Row label={label}>
       <div className="flex flex-col items-start gap-0.5 sm:items-end">
-        <span>{formatTime(unixSeconds.toString())}</span>
-        <span className="text-xs font-normal text-neutral-500">
-          {formatUtcFromUnixSeconds(unixSeconds.toString())}
-        </span>
+        <span>{moment.local}</span>
+        <span className="text-xs font-normal text-neutral-500">{moment.utc}</span>
       </div>
     </Row>
   );
@@ -66,6 +65,8 @@ function TimeRow({ label, unixSeconds }: { label: string; unixSeconds: bigint })
 // the same CreateStreamParams instance the confirm handler passes to
 // createStream, so what the user reviews is exactly what goes on-chain.
 export function StreamReview({ params, submitting, onBack, onConfirm }: Props): JSX.Element {
+  const schedule = formatSchedule(params);
+
   return (
     <section aria-labelledby="review-heading" className="flex flex-col gap-4">
       <div className="rounded-lg border border-neutral-800 bg-neutral-900/60 p-4">
@@ -96,12 +97,12 @@ export function StreamReview({ params, submitting, onBack, onConfirm }: Props): 
           <Row label="Duration">
             {formatDuration(params.endTime - params.startTime) ?? "—"}
           </Row>
-          <TimeRow label="Start" unixSeconds={params.startTime} />
-          <TimeRow label="End" unixSeconds={params.endTime} />
-          {params.cliffTime === params.startTime ? (
-            <Row label="Cliff">None (streams from the start)</Row>
+          <TimeRow label="Start" moment={schedule.start} />
+          <TimeRow label="End" moment={schedule.end} />
+          {schedule.cliff ? (
+            <TimeRow label="Cliff" moment={schedule.cliff} />
           ) : (
-            <TimeRow label="Cliff" unixSeconds={params.cliffTime} />
+            <Row label="Cliff">{NO_CLIFF_LABEL}</Row>
           )}
         </dl>
       </div>

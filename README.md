@@ -98,6 +98,8 @@ TricklePay is designed for modern desktop browsers with the [Freighter](https://
 
 Mobile browsers and browsers without extension support can view public stream information but require a supported desktop browser to sign and execute transactions.
 
+On the disconnected dashboard, a note explaining this is shown only when the visitor's browser isn't one of the supported desktop browsers above (`components/browser-support-note.tsx`, decided by `shouldShowBrowserSupportNote` in `lib/browser-support.ts`). It stays hidden on a supported browser, and until the browser is known during the first render, so it never flashes for the common case.
+
 ## Wallet Requirement
 
 TricklePay requires the [Freighter](https://www.freighter.app) browser extension to sign and submit transactions.
@@ -376,7 +378,8 @@ lib/
   api.ts                backend API client
   contract.ts           build, sign, submit, confirm contract calls with stage tracking
   vesting.ts            linear vesting math, mirroring the contract
-  format.ts             amount and address formatting
+  format.ts             amount, address and time-span formatting
+  schedule.ts           start/end/cliff/remaining text shared by every view
   create-stream-validation.ts create-form field validation rules
   create-form-draft.ts  create-form draft persistence
   stream-actions.ts     who may cancel, and why withdrawal is blocked

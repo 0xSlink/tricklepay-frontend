@@ -156,6 +156,13 @@ tricklepay-frontend/
 
 ## ♿ Accessibility & UI Principles
 
+The commitments the project holds (skip link, focus handling, live
+announcements, form labelling, reduced motion), the code that implements each,
+and how to verify them are in [docs/accessibility.md](docs/accessibility.md).
+Read it before changing UI, and update it in the same pull request if a change
+weakens or removes a commitment. Where the list below and that document
+differ, the document describes what the code does today.
+
 - **WCAG AA Compliance**: All interactive elements must include explicit focus rings (`focus-visible:ring-2 focus-visible:ring-offset-2`).
 - **Touch Targets**: All buttons, links, and form inputs must maintain a minimum touch target size of **44px x 44px**.
 - **Dark & Light Themes**: Ensure high contrast ratios across both light and dark themes (`dark:bg-neutral-900 dark:text-neutral-100`).
