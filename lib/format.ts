@@ -113,25 +113,33 @@ export function formatTime(unixSeconds: string): string {
 }
 
 /**
+ * The one place a span of time is turned into words, so a countdown and a
+ * duration can never phrase the same length differently: days and hours, hours
+ * and minutes, or minutes alone (seconds are dropped), and "under a minute"
+ * below a minute.
+ */
+function formatSpan(totalSeconds: number): string {
+  const days = Math.floor(totalSeconds / SECONDS_PER_DAY);
+  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
+  const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m`;
+  return "under a minute";
+}
+
+/**
  * Returns a short human description of how long until a stream's end time.
+ * Exactly `relativeTime(endTimeSeconds, "ends")`, so the list views and the
+ * detail page's End countdown always agree.
  *
  * @param endTimeSeconds - Unix timestamp in seconds, as a string
  * @returns Relative time string (e.g., "ends in 2d 3h", "ends in 45m") or
  *   "ended" if the time has passed. Fractional seconds are truncated down.
  */
 export function timeRemaining(endTimeSeconds: string): string {
-  const diffMs = Number(endTimeSeconds) * MS_PER_SECOND - Date.now();
-  if (diffMs <= 0) return "ended";
-
-  const seconds = Math.floor(diffMs / MS_PER_SECOND);
-  const days = Math.floor(seconds / SECONDS_PER_DAY);
-  const hours = Math.floor((seconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
-  const minutes = Math.floor((seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
-
-  if (days > 0) return `ends in ${days}d ${hours}h`;
-  if (hours > 0) return `ends in ${hours}h ${minutes}m`;
-  if (minutes > 0) return `ends in ${minutes}m`;
-  return "ends in under a minute";
+  return relativeTime(endTimeSeconds, "ends");
 }
 
 /**
@@ -165,10 +173,6 @@ export function formatMaxWithdrawHint(rawWithdrawable: string, tokenAddress?: st
  */
 export function relativeTime(unixSeconds: string, verb: string): string {
   const diffMs = Number(unixSeconds) * MS_PER_SECOND - Date.now();
-  const seconds = Math.floor(Math.abs(diffMs) / MS_PER_SECOND);
-  const days = Math.floor(seconds / SECONDS_PER_DAY);
-  const hours = Math.floor((seconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
-  const minutes = Math.floor((seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
 
   if (diffMs <= 0) {
     // Build a simple past-tense label.
@@ -177,13 +181,7 @@ export function relativeTime(unixSeconds: string, verb: string): string {
     return `${verb} passed`;
   }
 
-  let span: string;
-  if (days > 0) span = `${days}d ${hours}h`;
-  else if (hours > 0) span = `${hours}h ${minutes}m`;
-  else if (minutes > 0) span = `${minutes}m`;
-  else span = "under a minute";
-
-  return `${verb} in ${span}`;
+  return `${verb} in ${formatSpan(Math.floor(diffMs / MS_PER_SECOND))}`;
 }
 
 /**
@@ -195,13 +193,5 @@ export function relativeTime(unixSeconds: string, verb: string): string {
  */
 export function formatDuration(seconds: bigint): string | null {
   if (seconds <= 0n) return null;
-
-  const days = seconds / 86_400n;
-  const hours = (seconds % 86_400n) / 3_600n;
-  const minutes = (seconds % 3_600n) / 60n;
-
-  if (days > 0n) return `${days}d ${hours}h`;
-  if (hours > 0n) return `${hours}h ${minutes}m`;
-  if (minutes > 0n) return `${minutes}m`;
-  return "under a minute";
+  return formatSpan(Number(seconds));
 }

@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { JSX } from "react";
 
 import { StreamStatusBadge } from "@/components/stream-status-badge";
-import { formatTokenAmount, timeRemaining, truncateAddress } from "@/lib/format";
+import { formatTokenAmount, truncateAddress } from "@/lib/format";
+import { formatRemaining } from "@/lib/schedule";
 import type { StreamView } from "@/types/stream";
 
 export function StreamTable({
@@ -100,9 +101,7 @@ export function StreamTable({
                 {formatTokenAmount(stream.totalAmount, stream.token)}
               </td>
               <td className="px-4 py-3 text-xs text-neutral-500">
-                {stream.status === "streaming" || stream.status === "pending"
-                  ? timeRemaining(stream.endTime)
-                  : "—"}
+                {formatRemaining(stream) ?? "—"}
               </td>
             </tr>
           ))}
